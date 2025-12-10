@@ -33,133 +33,86 @@
 
         /* --- TELA DE LOGIN --- */
         #telaLogin {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--primary-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary-color); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 10000;
         }
 
         .login-card {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            width: 85%;
-            max-width: 320px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            background: white; padding: 30px; border-radius: 20px; text-align: center;
+            width: 85%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
 
         .login-input {
-            width: 100%;
-            padding: 12px;
-            margin: 15px 0;
-            border: 2px solid #eee;
-            border-radius: 8px;
-            font-size: 18px;
-            text-align: center;
-            box-sizing: border-box;
+            width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #eee;
+            border-radius: 8px; font-size: 18px; text-align: center; box-sizing: border-box;
         }
 
         /* --- APP PRINCIPAL --- */
-        #appConteudo { display: none; } /* Começa escondido */
+        #appConteudo { display: none; }
 
         .container { 
-            max-width: 900px; 
-            margin: 0 auto; 
-            background: var(--card-bg); 
-            padding: 25px; 
-            border-radius: var(--border-radius); 
+            max-width: 900px; margin: 0 auto; background: var(--card-bg); 
+            padding: 25px; border-radius: var(--border-radius); 
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
         }
         
-        h1 {
-            font-family: 'Poppins', sans-serif;
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            font-size: 1.8em;
-        }
-
+        h1 { font-family: 'Poppins', sans-serif; text-align: center; color: var(--primary-color); margin-bottom: 20px; font-size: 1.8em; }
         h3 { font-family: 'Poppins', sans-serif; margin-bottom: 10px; font-size: 1.1em; }
 
-        /* Estilo dos Cards de Seleção */
-        .seletor-papel {
-            background-color: #eff6ff;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin-bottom: 20px;
-            border: 1px solid #dbeafe;
+        .seletor-papel, .seletor-adicionar {
+            background-color: #eff6ff; padding: 20px; border-radius: var(--border-radius);
+            margin-bottom: 20px; border: 1px solid #dbeafe;
         }
-
-        .seletor-adicionar {
-            background-color: #fff7ed; /* Cor laranja clarinho */
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin-bottom: 20px;
-            border: 1px solid #ffedd5;
-        }
+        .seletor-adicionar { background-color: #fff7ed; border-color: #ffedd5; }
 
         .opcao-papel {
             display: flex; align-items: center; margin-bottom: 10px; cursor: pointer;
             padding: 12px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;
             font-weight: 500; font-size: 0.95em;
         }
-
         .opcao-papel input { margin-right: 15px; transform: scale(1.3); accent-color: var(--primary-color); }
 
-        /* Botões e Inputs Gerais */
         .btn-input { 
             display: block; width: 100%; padding: 12px; border: 2px solid #e5e7eb; 
             border-radius: 8px; background: #f9fafb; cursor: pointer; margin-bottom: 10px; 
             box-sizing: border-box; font-size: 1em;
         }
-        
-        .btn-primary {
-            background-color: var(--primary-color); color: white; border: none; font-weight: bold;
+        .btn-primary { background-color: var(--primary-color); color: white; border: none; font-weight: bold; }
+
+        /* --- BOTÕES DE IMAGEM (DUPLOS) --- */
+        .area-botoes-imagem {
+            display: flex; gap: 10px; margin-bottom: 15px;
         }
 
-        .btn-camera {
-            background-color: var(--primary-color);
-            color: white;
-            text-align: center;
-            padding: 15px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 1.1em;
-            display: block;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
-            margin-bottom: 20px;
-            transition: transform 0.1s;
+        .btn-camera, .btn-galeria {
+            flex: 1; /* Ocupam o mesmo espaço */
+            text-align: center; padding: 15px; border-radius: 12px;
+            font-weight: bold; font-size: 1em; cursor: pointer; color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.1s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .btn-camera:active { transform: scale(0.98); }
 
-        /* Área da Imagem */
+        .btn-camera { background-color: var(--primary-color); }
+        .btn-galeria { background-color: #4b5563; } /* Cinza Escuro */
+
+        .btn-camera:active, .btn-galeria:active { transform: scale(0.98); }
+
         #containerImagem {
-            min-height: 250px;
-            display: flex; align-items: center; justify-content: center;
+            min-height: 250px; display: flex; align-items: center; justify-content: center;
             background-color: #e5e7eb; border: 3px dashed #9ca3af;
             border-radius: var(--border-radius); margin-top: 15px;
             position: relative; overflow: hidden;
         }
-
         #minhaImagem { display: none; max-width: 100%; }
 
-        /* Inputs em Linha (L A B) */
         .row-inputs { display: flex; gap: 10px; margin-bottom: 10px; }
         .row-inputs input { margin-bottom: 0; text-align: center; }
 
-        /* Resultado */
         .resultado-box { 
             margin-top: 25px; padding: 20px; border-left: 6px solid var(--success); 
-            background: #ecfdf5; border-radius: 8px; display: none; 
-            animation: fadeIn 0.5s; 
+            background: #ecfdf5; border-radius: 8px; display: none; animation: fadeIn 0.5s; 
         }
-
         .cor-box { 
             width: 60px; height: 60px; display: inline-block; border: 3px solid #fff; 
             box-shadow: 0 4px 6px rgba(0,0,0,0.2); vertical-align: middle; 
@@ -169,7 +122,6 @@
         canvas { display: none; }
         #areaLineatura { margin-top: 15px; display: none; padding-top: 15px; border-top: 1px dashed #ccc;}
         select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 1em; background: white;}
-        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         hr { border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0; }
     </style>
@@ -180,7 +132,7 @@
         <div class="login-card">
             <h2 style="color: var(--primary-color); margin-top:0;">🔒 Acesso Restrito</h2>
             <p style="color: #666;">Digite a senha para aceder.</p>
-            <input type="number" id="senhaInput" class="login-input" placeholder="Senha (ex: 1234)">
+            <input type="number" id="senhaInput" class="login-input" placeholder="Senha">
             <button onclick="verificarSenha()" class="btn-input btn-primary">Entrar</button>
             <p id="msgErro" style="color: red; display: none; margin-top: 10px; font-weight: bold;">Senha Incorreta!</p>
         </div>
@@ -192,19 +144,9 @@
 
             <div class="seletor-papel">
                 <h3>1. Substrato / Banco de Cores:</h3>
-                
-                <label class="opcao-papel">
-                    <input type="radio" name="tipoPapel" value="branco" checked onchange="atualizarOpcoes()"> 
-                    Papel Branco (Corrugados)
-                </label>
-                
-                <label class="opcao-papel">
-                    <input type="radio" name="tipoPapel" value="pardo" onchange="atualizarOpcoes()"> 
-                    Papel Pardo (Corrugados)
-                </label>
-
+                <label class="opcao-papel"><input type="radio" name="tipoPapel" value="branco" checked onchange="atualizarOpcoes()"> Papel Branco (Corrugados)</label>
+                <label class="opcao-papel"><input type="radio" name="tipoPapel" value="pardo" onchange="atualizarOpcoes()"> Papel Pardo (Corrugados)</label>
                 <hr>
-
                 <label class="opcao-papel"><input type="radio" name="tipoPapel" value="pp_coated" onchange="atualizarOpcoes()"> Pre-Print: Coated</label>
                 <label class="opcao-papel"><input type="radio" name="tipoPapel" value="pp_wtl" onchange="atualizarOpcoes()"> Pre-Print: WTL</label>
                 <label class="opcao-papel"><input type="radio" name="tipoPapel" value="pp_kraft" onchange="atualizarOpcoes()"> Pre-Print: Kraft</label>
@@ -216,9 +158,7 @@
             </div>
 
             <div class="seletor-adicionar">
-                <h3 style="color: #ea580c;">➕ Adicionar Nova Cor (Temporário):</h3>
-                <p style="font-size: 0.85em; color: #666; margin-bottom: 10px;">Adiciona uma cor ao banco selecionado acima.</p>
-                
+                <h3 style="color: #ea580c;">➕ Adicionar Nova Cor:</h3>
                 <input type="text" id="addNome" placeholder="Nome da Cor (ex: Azul Teste)" class="btn-input">
                 <div class="row-inputs">
                     <input type="number" id="addL" placeholder="L" step="0.1" class="btn-input">
@@ -242,13 +182,20 @@
 
             <h3>📸 Análise por Imagem:</h3>
             
-            <label class="btn-camera">
-                📷 Fotografar / Carregar
-                <input type="file" id="inputArquivo" accept="image/*" capture="environment" style="display: none;">
-            </label>
+            <div class="area-botoes-imagem">
+                <label class="btn-camera">
+                    📷 Câmera
+                    <input type="file" id="inputCamera" accept="image/*" capture="environment" style="display: none;">
+                </label>
+                
+                <label class="btn-galeria">
+                    📂 Galeria
+                    <input type="file" id="inputGaleria" accept="image/*" style="display: none;">
+                </label>
+            </div>
 
             <div id="containerImagem">
-                <p id="textoAjuda" style="color: #888;">A imagem aparecerá aqui.</p>
+                <p id="textoAjuda" style="color: #888;">Use um dos botões acima.</p>
                 <img id="minhaImagem" alt="Imagem carregada">
             </div>
             <p style="text-align: center; font-size: 0.9em; color: #666; margin-top: 5px;">Toque na imagem para identificar a cor.</p>
@@ -268,13 +215,10 @@
     </div>
 
 <script>
-    // ==========================================
     // 1. SISTEMA DE SENHA
-    // ==========================================
     function verificarSenha() {
         const pass = document.getElementById('senhaInput').value;
-        // SENHA DEFINIDA: 1234 (Pode alterar aqui)
-        if(pass === "1234") {
+        if(pass === "wrk_bra123") { // <--- MUDE SUA SENHA AQUI
             document.getElementById('telaLogin').style.display = 'none';
             document.getElementById('appConteudo').style.display = 'block';
         } else {
@@ -282,10 +226,7 @@
         }
     }
 
-    // ==========================================
-    // 2. BANCOS DE DADOS (DADOS COMPLETOS)
-    // ==========================================
-
+    // 2. BANCOS DE DADOS
     const bancoCoresBranco = [
         { nome: "Vermelho Fogo", r: 255, g: 0, b: 0 },
         { nome: "Azul Oceano", r: 0, g: 131, b: 187 },
@@ -666,11 +607,7 @@
         'pp_kraft':  { lista: bancoCoresPPKraft,  nomeDisplay: "Pre-Print: Kraft" }
     };
 
-    // ==========================================
     // 3. LÓGICA DO APP
-    // ==========================================
-
-    const input = document.getElementById('inputArquivo');
     const imgElement = document.getElementById('minhaImagem');
     const containerImg = document.getElementById('containerImagem');
     const canvas = document.getElementById('canvasOculto');
@@ -693,9 +630,7 @@
         
         if (lineaturasLimpas.length > 0) {
             areaLineatura.style.display = 'block';
-            // Ordenar numericamente se possível
             lineaturasLimpas.sort((a, b) => parseFloat(a) - parseFloat(b));
-
             lineaturasLimpas.forEach(lin => {
                 const option = document.createElement('option');
                 option.value = lin;
@@ -708,9 +643,7 @@
     }
     atualizarOpcoes();
 
-    // --- NOVA FUNÇÃO: ADICIONAR COR PERSONALIZADA ---
     function adicionarCorPersonalizada() {
-        // 1. Validar Inputs
         const nome = document.getElementById('addNome').value.trim();
         const l = parseFloat(document.getElementById('addL').value);
         const a = parseFloat(document.getElementById('addA').value);
@@ -721,39 +654,30 @@
             return;
         }
 
-        // 2. Identificar banco ativo
         const radioSelecionado = document.querySelector('input[name="tipoPapel"]:checked');
         if (!radioSelecionado) return;
         
         const bancoAtivo = opcoesBancos[radioSelecionado.value].lista;
 
-        // 3. Criar objeto e adicionar (push)
         const novaCor = {
             nome: nome + " (Custom)",
-            l: l,
-            a: a,
-            b: b,
-            // Não colocamos lineatura para ser sempre visível, ou definimos 'Manual'
+            l: l, a: a, b: b,
             lineatura: 'Manual'
         };
 
         bancoAtivo.push(novaCor);
-
-        // 4. Feedback
         alert(`Sucesso!\nCor "${nome}" adicionada ao banco ${opcoesBancos[radioSelecionado.value].nomeDisplay}.`);
         
-        // Limpar campos
         document.getElementById('addNome').value = "";
         document.getElementById('addL').value = "";
         document.getElementById('addA').value = "";
         document.getElementById('addB').value = "";
-
-        // Atualizar filtros se necessário
         atualizarOpcoes();
     }
 
-    // --- CARREGAMENTO DE IMAGEM / CÂMARA ---
-    input.addEventListener('change', function(e) {
+    // --- CARREGAMENTO DE IMAGEM (DUPLO) ---
+    // Função única que funciona para os dois botões
+    const carregarImagem = function(e) {
         const file = e.target.files[0];
         if (!file) return;
         
@@ -764,7 +688,11 @@
             imgElement.src = event.target.result;
         }
         reader.readAsDataURL(file);
-    });
+    };
+
+    // Ouve os dois botões (Câmera e Galeria)
+    document.getElementById('inputCamera').addEventListener('change', carregarImagem);
+    document.getElementById('inputGaleria').addEventListener('change', carregarImagem);
 
     imgElement.onload = function() {
         imgElement.style.display = 'block';
@@ -790,7 +718,6 @@
         }
     });
 
-    // --- CÁLCULOS E COMPARAÇÃO ---
     function processarCor(r, g, b) {
         const labClicado = rgbParaLab(r, g, b);
         executarComparacao(labClicado);
@@ -814,7 +741,6 @@
         const configuracao = opcoesBancos[radioSelecionado.value];
         let listaAtual = configuracao.lista;
         
-        // Filtro Lineatura
         const filtro = selectLineatura.value;
         if (areaLineatura.style.display !== 'none' && filtro !== 'todas') {
             listaAtual = listaAtual.filter(cor => cor.lineatura == filtro);
@@ -831,7 +757,6 @@
                 labBanco = rgbParaLab(corBanco.r, corBanco.g, corBanco.b);
             }
 
-            // Delta E (Distância Euclidiana simples)
             const dist = Math.sqrt(
                 Math.pow(labAlvo.l - labBanco.l, 2) + 
                 Math.pow(labAlvo.a - labBanco.a, 2) + 
@@ -874,7 +799,6 @@
         resultadoDiv.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // --- MATEMÁTICA DE CORES ---
     function rgbParaLab(r, g, b) {
         let r_lin = r / 255, g_lin = g / 255, b_lin = b / 255;
         r_lin = (r_lin > 0.04045) ? Math.pow((r_lin + 0.055) / 1.055, 2.4) : r_lin / 12.92;
