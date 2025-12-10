@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Analisador de Cores PRO</title>
+    
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3767/3767036.png">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3767/3767036.png">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Poppins:wght@500;700&display=swap');
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #3b82f6;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-light: #6b7280;
+            --success: #10b981;
+            --border-radius: 12px;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            padding: 20px; 
+            background-color: var(--bg-color); 
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* --- TELA DE LOGIN --- */
+        #telaLogin {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .login-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            width: 85%;
+            max-width: 320px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 18px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* --- APP PRINCIPAL --- */
+        #appConteudo { display: none; } /* Começa escondido */
+
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: var(--card-bg); 
+            padding: 25px; 
+            border-radius: var(--border-radius); 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
+        }
+        
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        h3 { font-family: 'Poppins', sans-serif; margin-bottom: 10px; font-size: 1.1em; }
+
+        /* Estilo dos Cards de Seleção */
+        .seletor-papel {
+            background-color: #eff6ff;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            border: 1px solid #dbeafe;
+        }
+
+        .seletor-adicionar {
+            background-color: #fff7ed; /* Cor laranja clarinho */
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            border: 1px solid #ffedd5;
+        }
+
+        .opcao-papel {
+            display: flex; align-items: center; margin-bottom: 10px; cursor: pointer;
+            padding: 12px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;
+            font-weight: 500; font-size: 0.95em;
+        }
+
+        .opcao-papel input { margin-right: 15px; transform: scale(1.3); accent-color: var(--primary-color); }
+
+        /* Botões e Inputs Gerais */
+        .btn-input { 
+            display: block; width: 100%; padding: 12px; border: 2px solid #e5e7eb; 
+            border-radius: 8px; background: #f9fafb; cursor: pointer; margin-bottom: 10px; 
+            box-sizing: border-box; font-size: 1em;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color); color: white; border: none; font-weight: bold;
+        }
+
+        .btn-camera {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1.1em;
+            display: block;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+            margin-bottom: 20px;
+            transition: transform 0.1s;
+        }
+        .btn-camera:active { transform: scale(0.98); }
+
+        /* Área da Imagem */
+        #containerImagem {
+            min-height: 250px;
+            display: flex; align-items: center; justify-content: center;
+            background-color: #e5e7eb; border: 3px dashed #9ca3af;
+            border-radius: var(--border-radius); margin-top: 15px;
+            position: relative; overflow: hidden;
+        }
+
+        #minhaImagem { display: none; max-width: 100%; }
+
+        /* Inputs em Linha (L A B) */
+        .row-inputs { display: flex; gap: 10px; margin-bottom: 10px; }
+        .row-inputs input { margin-bottom: 0; text-align: center; }
+
+        /* Resultado */
+        .resultado-box { 
+            margin-top: 25px; padding: 20px; border-left: 6px solid var(--success); 
+            background: #ecfdf5; border-radius: 8px; display: none; 
+            animation: fadeIn 0.5s; 
+        }
+
+        .cor-box { 
+            width: 60px; height: 60px; display: inline-block; border: 3px solid #fff; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2); vertical-align: middle; 
+            margin-left: 10px; border-radius: 50%; 
+        }
+
+        canvas { display: none; }
+        #areaLineatura { margin-top: 15px; display: none; padding-top: 15px; border-top: 1px dashed #ccc;}
+        select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 1em; background: white;}
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        hr { border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+    <div id="telaLogin">
+        <div class="login-card">
+            <h2 style="color: var(--primary-color); margin-top:0;">🔒 Acesso Restrito</h2>
+            <p style="color: #666;">Digite a senha para aceder.</p>
+            <input type="number" id="senhaInput" class="login-input" placeholder="Senha (ex: 1234)">
+            <button onclick="verificarSenha()" class="btn-input btn-primary">Entrar</button>
+            <p id="msgErro" style="color: red; display: none; margin-top: 10px; font-weight: bold;">Senha Incorreta!</p>
+        </div>
+    </div>
+
+    <div id="appConteudo">
+        <div class="container">
+            <h1>🎨 Analisador L.A.B</h1>
+
+            <div class="seletor-papel">
+                <h3>1. Substrato / Banco de Cores:</h3>
+                
+                <label class="opcao-papel">
+                    <input type="radio" name="tipoPapel" value="branco" checked onchange="atualizarOpcoes()"> 
+                    Papel Branco (Corrugados)
+                </label>
+                
+                <label class="opcao-papel">
+                    <input type="radio" name="tipoPapel" value="pardo" onchange="atualizarOpcoes()"> 
+                    Papel Pardo (Corrugados)
+                </label>
+
+                <hr>
+
+                <label class="opcao-papel"><input type="radio" name="tipoPapel" value="pp_coated" onchange="atualizarOpcoes()"> Pre-Print: Coated</label>
+                <label class="opcao-papel"><input type="radio" name="tipoPapel" value="pp_wtl" onchange="atualizarOpcoes()"> Pre-Print: WTL</label>
+                <label class="opcao-papel"><input type="radio" name="tipoPapel" value="pp_kraft" onchange="atualizarOpcoes()"> Pre-Print: Kraft</label>
+
+                <div id="areaLineatura">
+                    <h3>Filtrar Lineatura:</h3>
+                    <select id="selectLineatura"><option value="todas">Ver Todas</option></select>
+                </div>
+            </div>
+
+            <div class="seletor-adicionar">
+                <h3 style="color: #ea580c;">➕ Adicionar Nova Cor (Temporário):</h3>
+                <p style="font-size: 0.85em; color: #666; margin-bottom: 10px;">Adiciona uma cor ao banco selecionado acima.</p>
+                
+                <input type="text" id="addNome" placeholder="Nome da Cor (ex: Azul Teste)" class="btn-input">
+                <div class="row-inputs">
+                    <input type="number" id="addL" placeholder="L" step="0.1" class="btn-input">
+                    <input type="number" id="addA" placeholder="A" step="0.1" class="btn-input">
+                    <input type="number" id="addB" placeholder="B" step="0.1" class="btn-input">
+                </div>
+                <button onclick="adicionarCorPersonalizada()" class="btn-input" style="background-color: #ea580c; color: white; font-weight: bold;">Salvar Cor</button>
+            </div>
+
+            <div class="seletor-papel" style="border-color: #2563eb; background-color: #eff6ff;">
+                <h3>🔍 Busca Manual (L.A.B):</h3>
+                <div class="row-inputs">
+                    <input type="number" id="inputL" placeholder="L" step="0.1" class="btn-input">
+                    <input type="number" id="inputA" placeholder="A" step="0.1" class="btn-input">
+                    <input type="number" id="inputB" placeholder="B" step="0.1" class="btn-input">
+                </div>
+                <button onclick="buscarLabManual()" class="btn-input btn-primary">Buscar no Banco</button>
+            </div>
+
+            <hr>
+
+            <h3>📸 Análise por Imagem:</h3>
+            
+            <label class="btn-camera">
+                📷 Fotografar / Carregar
+                <input type="file" id="inputArquivo" accept="image/*" capture="environment" style="display: none;">
+            </label>
+
+            <div id="containerImagem">
+                <p id="textoAjuda" style="color: #888;">A imagem aparecerá aqui.</p>
+                <img id="minhaImagem" alt="Imagem carregada">
+            </div>
+            <p style="text-align: center; font-size: 0.9em; color: #666; margin-top: 5px;">Toque na imagem para identificar a cor.</p>
+
+            <canvas id="canvasOculto"></canvas>
+
+            <div id="resultado" class="resultado-box">
+                <h3>Resultado:</h3>
+                <p>Base: <strong id="nomeBaseUsada">---</strong></p>
+                <p>Lineatura: <strong id="infoLineatura">---</strong></p> 
+                <p>Cor: <strong id="nomeCor" style="font-size: 1.3em;">---</strong> <span id="visualCor" class="cor-box"></span></p>
+                <hr>
+                <small>Dados LAB Detectados: <span id="labDados">---</span></small>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+    // ==========================================
+    // 1. SISTEMA DE SENHA
+    // ==========================================
+    function verificarSenha() {
+        const pass = document.getElementById('senhaInput').value;
+        // SENHA DEFINIDA: 1234 (Pode alterar aqui)
+        if(pass === "1234") {
+            document.getElementById('telaLogin').style.display = 'none';
+            document.getElementById('appConteudo').style.display = 'block';
+        } else {
+            document.getElementById('msgErro').style.display = 'block';
+        }
+    }
+
+    // ==========================================
+    // 2. BANCOS DE DADOS (DADOS COMPLETOS)
+    // ==========================================
+
+    const bancoCoresBranco = [
+        { nome: "Vermelho Fogo", r: 255, g: 0, b: 0 },
+        { nome: "Azul Oceano", r: 0, g: 131, b: 187 },
+        { nome: "Amarelo Sol", r: 255, g: 255, b: 0 },
+        { nome: "Verde Folha", r: 34, g: 139, b: 34 },
+        { nome: "Preto Profundo", r: 0, g: 0, b: 0 },
+        { nome: "Branco Neve", r: 255, g: 255, b: 255 },
+        { nome: "Cinza Neutro", r: 128, g: 128, b: 128 },
+        { nome: "Laranja Vivo", r: 255, g: 165, b: 0 },
+        { nome: "Roxo", r: 128, g: 0, b: 128 },
+        { nome: "Amarelo Escala", r: 255, g: 226, b: 0 },
+        { nome: "Vermelho 485UB", r: 183, g: 45, b: 42 },
+        { nome: "Verde 10F", r: 27, g: 123, b: 78 },
+        { nome: "Verde 05", r: 38, g: 172, b: 94 },
+        { nome: "Azul 2768UB", r: 43, g: 67, b: 124 },
+        { nome: "Vermelho 2F", r: 187, g: 37, b: 38 },
+        { nome: "Azul 45F", r: 35, g: 110, b: 162 },
+        { nome: "Azul 21F", r: 47, g: 83, b: 148 },
+        { nome: "Verde 60F", r: 97, g: 193, b: 114 },
+        { nome: "Azul 272UB", r: 89, g: 106, b: 156 },
+        { nome: "Azul 291UB", r: 156, g: 206, b: 224 },
+        { nome: "Cinza 425UB", r: 110, g: 111, b: 106 },
+        { nome: "Verde 23F", r: 92, g: 172, b: 156 },
+        { nome: "Cinza 21F", r: 188, g: 189, b: 182 },
+        { nome: "VD Imperio", r: 0, g: 109, b: 74 },
+        { nome: "Azul 5415UB", r: 107, g: 120, b: 148 },
+        { nome: "Roxo 1F", r: 114, g: 57, b: 132 },
+        { nome: "Azul 281UB", r: 43, g: 68, b: 123 },
+        { nome: "Cinza 10F", r: 154, g: 155, b: 151 },
+        { nome: "Azul 2F", r: 0, g: 107, b: 163 },
+        { nome: "Rosa 2F", r: 226, g: 150, b: 166 },
+        { nome: "Marrom 16F", r: 85, g: 67, b: 63 },
+        { nome: "Lilás 4F", r: 153, g: 44, b: 135 },
+        { nome: "Verde 334UB", r: 0, g: 148, b: 94 },
+        { nome: "Azul 51F", r: 35, g: 64, b: 137 },
+        { nome: "Creme 5F", r: 221, g: 193, b: 158 },
+        { nome: "Azul 62F", r: 54, g: 89, b: 145 },
+        { nome: "Azul 81F", r: 0, g: 110, b: 165 },
+        { nome: "Azul 291UB", r: 156, g: 206, b: 224 },
+        { nome: "Cinza 10F", r: 154, g: 155, b: 151 },
+        { nome: "Azul 2F", r: 0, g: 107, b: 163 },
+        { nome: "Verde 23F", r: 92, g: 172, b: 156 },
+        { nome: "Azul 281UB", r: 43, g: 68, b: 123 },
+        { nome: "Roxo 1F", r: 114, g: 57, b: 132 },
+        { nome: "Cinza 425UB", r: 110, g: 111, b: 106 },
+        { nome: "VD Imperio", r: 0, g: 109, b: 74 },
+        { nome: "Azul 5415UB", r: 107, g: 120, b: 148 },
+        { nome: "Cinza 21F", r: 188, g: 189, b: 182 },
+        { nome: "Laranja 3F", r: 238, g: 148, b: 0 },
+        { nome: "Rosa 2F", r: 226, g: 150, b: 166 },
+        { nome: "Maravilha 4F", r: 189, g: 45, b: 94 },
+        { nome: "Lilás 4F", r: 153, g: 44, b: 135 },
+        { nome: "Azul 2F", r: 0, g: 107, b: 163 },
+        { nome: "Azul 7F", r: 0, g: 116, b: 172 },
+        { nome: "Azul 81F", r: 0, g: 110, b: 165 },
+        { nome: "Azul 62F", r: 54, g: 89, b: 145 },
+        { nome: "Azul 51F", r: 35, g: 64, b: 137 },
+        { nome: "Azul 49F", r: 43, g: 83, b: 154 },
+        { nome: "Azul 306UB", r: 97, g: 176, b: 198 },
+        { nome: "Azul 299UB", r: 68, g: 144, b: 192 },
+        { nome: "Azul 291UB", r: 156, g: 206, b: 224 },
+        { nome: "Azul 281UB", r: 43, g: 68, b: 123 },
+        { nome: "Azul 5415UB", r: 107, g: 120, b: 148 },
+        { nome: "Roxo 1F", r: 114, g: 57, b: 132 },
+        { nome: "Verde 2F", r: 0, g: 165, b: 103 },
+        { nome: "Verde 12F", r: 129, g: 158, b: 94 },
+        { nome: "Verde 23F", r: 92, g: 172, b: 156 },
+        { nome: "Verde 334UB", r: 0, g: 148, b: 94 },
+        { nome: "VD Imperio", r: 0, g: 109, b: 74 },
+        { nome: "Creme 5F", r: 221, g: 193, b: 158 },
+        { nome: "Marrom 16F", r: 85, g: 67, b: 63 },
+        { nome: "Vermelho 208UB", r: 128, g: 60, b: 62 },
+        { nome: "Cinza 425UB", r: 110, g: 111, b: 106 },
+        { nome: "Cinza 404UB", r: 137, g: 138, b: 130 },
+        { nome: "Cinza 21F", r: 188, g: 189, b: 182 },
+        { nome: "Cinza 10F", r: 154, g: 155, b: 151 },
+        { nome: "Amarelo 137UB", r: 237, g: 178, b: 0 },
+        { nome: "Azul 25F", r: 140, g: 177, b: 206 },
+        { nome: "Azul 5F", r: 63, g: 110, b: 145 },
+        { nome: "Azul 60F", r: 15, g: 116, b: 163 },
+        { nome: "Azul 293UB", r: 40, g: 94, b: 148 },
+        { nome: "Laranja 1F", r: 232, g: 106, b: 0 },
+        { nome: "Verde 51F", r: 0, g: 123, b: 74 },
+        { nome: "Verde 54F", r: 29, g: 116, b: 77 },
+        { nome: "Verde 361UB", r: 102, g: 183, b: 97 },
+        { nome: "Branco Cubriente", r: 226, g: 224, b: 220 },
+        { nome: "Verde 74F", r: 23, g: 106, b: 67 },
+        { nome: "Verde 368UB", r: 110, g: 189, b: 103 },
+        { nome: "Underarmor Preto", r: 44, g: 44, b: 46 },
+        { nome: "Azul 86F", r: 30, g: 64, b: 132 },
+        { nome: "Azul 56F", r: 132, g: 175, b: 198 },
+        { nome: "Vermelho 032UB", r: 195, g: 61, b: 66 },
+        { nome: "Vermelho 55F", r: 172, g: 52, b: 89 },
+        { nome: "Verde 20F", r: 45, g: 148, b: 94 },
+        { nome: "Azul 44F", r: 73, g: 134, b: 172 },
+        { nome: "Azul 57F", r: 47, g: 83, b: 148 },
+        { nome: "Azul 59F", r: 98, g: 150, b: 187 },
+        { nome: "Azul 64F", r: 96, g: 117, b: 148 },
+        { nome: "Azul 294UB", r: 52, g: 85, b: 136 },
+        { nome: "Azul 33F", r: 1, g: 106, b: 163 },
+        { nome: "Verde 19F", r: 69, g: 144, b: 95 },
+        { nome: "Verde 39F", r: 85, g: 150, b: 97 },
+        { nome: "Vermelho 63F", r: 141, g: 67, b: 59 },
+        { nome: "Vermelho 76GCMI", r: 167, g: 51, b: 47 },
+        { nome: "Azul 66F", r: 54, g: 86, b: 132 },
+        { nome: "Azul 75F", r: 73, g: 46, b: 132 },
+        { nome: "Cinza 24F", r: 76, g: 78, b: 74 },
+        { nome: "Cinza 416UB", r: 137, g: 140, b: 132 },
+        { nome: "Roxo 11F", r: 106, g: 67, b: 123 },
+        { nome: "Verde 19B", r: 55, g: 150, b: 94 },
+        { nome: "Verde 66F", r: 0, g: 159, b: 94 },
+        { nome: "Verde 76F", r: 95, g: 185, b: 109 },
+        { nome: "Vermelho 28F", r: 149, g: 73, b: 59 },
+        { nome: "Vermelho 45F", r: 178, g: 44, b: 39 },
+        { nome: "Azul 387UB", r: 132, g: 163, b: 188 },
+        { nome: "Azul 3F", r: 19, g: 123, b: 173 },
+        { nome: "Azul 11F", r: 72, g: 117, b: 158 },
+        { nome: "Azul 50F", r: 44, g: 85, b: 148 },
+        { nome: "Azul 2995UB", r: 133, g: 175, b: 199 },
+        { nome: "Verde 9F", r: 39, g: 113, b: 74 },
+        { nome: "Verde 15F", r: 63, g: 152, b: 94 },
+        { nome: "Verde 355UB", r: 48, g: 155, b: 92 },
+        { nome: "Crease", r: 255, g: 125, b: 0 },
+        { nome: "Azul 73F", r: 38, g: 78, b: 148 },
+        { nome: "Marrom 8F", r: 106, g: 83, b: 70 },
+        { nome: "Roxo 12F", r: 123, g: 71, b: 129 },
+        { nome: "Azul 294UB Bungie", r: 29, g: 94, b: 156 },
+        { nome: "Cyan Escala", r: 20, g: 107, b: 163 },
+        { nome: "Lilás 11F", r: 172, g: 68, b: 125 },
+        { nome: "Preto Escala", r: 79, g: 79, b: 74 },
+        { nome: "Vermelho 1F", r: 172, g: 48, b: 59 },
+        { nome: "Vermelho 4F", r: 180, g: 76, b: 61 },
+        { nome: "Vermelho 75F", r: 189, g: 52, b: 57 },
+        { nome: "Azul 32F", r: 0, g: 66, b: 140 },
+        { nome: "Verde 75F", r: 118, g: 193, b: 148 },
+        { nome: "Azul 35F", r: 0, g: 94, b: 172 },
+        { nome: "Azul 71F", r: 0, g: 45, b: 132 },
+        { nome: "Laranja 6F", r: 230, g: 83, b: 0 },
+        { nome: "Branco 1F", r: 226, g: 220, b: 217 },
+        { nome: "Cinza 25F", r: 188, g: 184, b: 181 },
+        { nome: "Azul 39F", r: 96, g: 175, b: 189 },
+        { nome: "Vermelho 62F", r: 198, g: 31, b: 67 },
+        { nome: "Azul Claro SW", r: 123, g: 178, b: 210 },
+        { nome: "Cinza 6F", r: 77, g: 74, b: 74 },
+        { nome: "Marrom 1F", r: 137, g: 68, b: 72 },
+        { nome: "Cinza 445", r: 147, g: 143, b: 140 },
+        { nome: "Verde 22F", r: 75, g: 183, b: 78 },
+        { nome: "Marrom 2F", r: 150, g: 61, b: 65 },
+        { nome: "Laranja 2F", r: 217, g: 94, b: 0 },
+        { nome: "Verde 389C", r: 110, g: 208, b: 0 },
+        { nome: "Vermelho 10F", r: 213, g: 33, b: 59 },
+        { nome: "Lilás 1F", r: 187, g: 57, b: 94 },
+        { nome: "Amarelo 10GCMI", r: 244, g: 200, b: 58 },
+        { nome: "Cut", r: 255, g: 255, b: 255 },
+        { nome: "Azul 15F", r: 11, g: 93, b: 114 },
+        { nome: "Vermelho 76GCMI", r: 196, g: 50, b: 48 },
+        { nome: "Vermelho 186UB", r: 212, g: 87, b: 78 },
+        { nome: "Azul 24F", r: 60, g: 165, b: 210 },
+        { nome: "Azul 285UB", r: 0, g: 103, b: 158 },
+        { nome: "Vermelho 214UB", r: 205, g: 67, b: 89 },
+        { nome: "Maravilha 1F", r: 194, g: 33, b: 124 },
+        { nome: "Vermelho 20F", r: 215, g: 100, b: 85 },
+        { nome: "Roxo 9F", r: 114, g: 60, b: 101 },
+        { nome: "Azul 274UB", r: 74, g: 69, b: 114 },
+        { nome: "Azul 61F", r: 50, g: 148, b: 179 },
+        { nome: "Azul 45F", r: 51, g: 185, b: 163 },
+        { nome: "Azul 54F", r: 0, g: 111, b: 149 },
+        { nome: "Cinza 427UB", r: 196, g: 195, b: 187 },
+        { nome: "Marrom 1245UB", r: 191, g: 145, b: 68 },
+        { nome: "Vermelho 1B", r: 208, g: 76, b: 74 },
+        { nome: "Verde Rigesa", r: 122, g: 96, b: 0 },
+        { nome: "Azul 83F", r: 0, g: 123, b: 196 },
+        { nome: "Verde 55F", r: 0, g: 165, b: 102 },
+        { nome: "Roxo 2593UB", r: 134, g: 0, b: 129 },
+        { nome: "Laranja 4F", r: 200, g: 102, b: 0 },
+        { nome: "Kraft", r: 171, g: 136, b: 104 },
+        { nome: "Marrom 4F", r: 213, g: 185, b: 99 },
+        { nome: "Cinza 430UB", r: 148, g: 149, b: 150 },
+        { nome: "Cinza 428UB", r: 179, g: 178, b: 172 },
+        { nome: "Vermelho 200UB", r: 171, g: 58, b: 67 },
+        { nome: "Lilás 04 HG", r: 125, g: 37, b: 112 },
+        { nome: "Vermelho 485GCMI", r: 225, g: 68, b: 66 },
+        { nome: "Azul 289UB", r: 51, g: 82, b: 114 },
+        { nome: "Vermelho 61F", r: 218, g: 60, b: 51 },
+        { nome: "Magenta Escala", r: 200, g: 64, b: 99 },
+        { nome: "Verde 29F", r: 60, g: 97, b: 84 },
+        { nome: "Verde 356UB", r: 39, g: 116, b: 83 },
+        { nome: "Vermelho 3F", r: 213, g: 56, b: 76 },
+        { nome: "Azul 072", r: 0, g: 45, b: 134 },
+        { nome: "Azul 36F", r: 0, g: 79, b: 125 },
+        { nome: "Azul 8F", r: 0, g: 72, b: 148 },
+        { nome: "Cinza 10F", r: 148, g: 148, b: 147 },
+        { nome: "Cinza 22F", r: 211, g: 208, b: 203 },
+        { nome: "Cinza 545SUB", r: 196, g: 201, b: 196 },
+        { nome: "Marrom 31F", r: 137, g: 84, b: 62 },
+        { nome: "Preto 90GCMI", r: 72, g: 70, b: 67 },
+        { nome: "Verde 47F", r: 60, g: 173, b: 0 },
+        { nome: "Verde 07", r: 0, g: 129, b: 82 },
+        { nome: "Vermelho 43F", r: 158, g: 58, b: 70 },
+        { nome: "Amarelo 21F", r: 227, g: 182, b: 44 },
+        { nome: "Vermelho 48F", r: 188, g: 49, b: 45 },
+        { nome: "Azul 27F", r: 73, g: 91, b: 136 },
+        { nome: "Verde 1F", r: 0, g: 114, b: 118 },
+        { nome: "Verde 56F", r: 0, g: 148, b: 84 },
+        { nome: "Azul 280UB", r: 69, g: 74, b: 118 },
+        { nome: "Azul 34F", r: 0, g: 129, b: 170 },
+        { nome: "Azul 37F", r: 67, g: 73, b: 114 },
+        { nome: "Azul Celeste", r: 0, g: 125, b: 185 },
+        { nome: "Branco 2F", r: 231, g: 230, b: 224 },
+        { nome: "Verde 46F", r: 100, g: 184, b: 0 },
+        { nome: "Ouro 01 HG", r: 148, g: 114, b: 0 },
+        { nome: "Lilás 12F", r: 162, g: 23, b: 120 },
+        { nome: "Azul 80F", r: 0, g: 148, b: 200 },
+        { nome: "Marrom 26F", r: 100, g: 47, b: 46 },
+        { nome: "Laranja 16F", r: 227, g: 124, b: 0 },
+        { nome: "Cinza 15F", r: 134, g: 133, b: 130 },
+        { nome: "Vermelho 13F", r: 190, g: 57, b: 72 },
+        { nome: "Preto 1F", r: 70, g: 66, b: 62 },
+        { nome: "Marrom 25F", r: 123, g: 91, b: 76 },
+        { nome: "Laranja 10F", r: 222, g: 138, b: 49 },
+        { nome: "Marrom 9F", r: 144, g: 84, b: 105 },
+        { nome: "Laranja 9F", r: 243, g: 100, b: 52 },
+        { nome: "Laranja 18F", r: 255, g: 165, b: 25 },
+        { nome: "Vermelho 36F", r: 208, g: 56, b: 77 },
+        { nome: "Verde 43F", r: 67, g: 105, b: 76 },
+        { nome: "Vermelho 42F", r: 172, g: 62, b: 74 },
+    ];
+
+    const bancoCoresPardo = [
+        { nome: "Marrom Kraft Exemplo", r: 160, g: 130, b: 90 },
+        { nome: "Preto Pardo Exemplo", r: 40, g: 40, b: 35 },
+    ];
+
+    const bancoCoresPPCoated = [
+        { nome: "AMARELO 03 HG", r: 236, g: 207, b: 6, lineatura: "255" },
+        { nome: "AMARELO 04 HG", r: 236, g: 191, b: 40, lineatura: "200" },
+        { nome: "AMARELO 05 HG", r: 243, g: 213, b: 0, lineatura: "255" },
+        { nome: "AMARELO 07 HG", r: 215, g: 182, b: 21, lineatura: "255" },
+        { nome: "AMARELO 08 HG", r: 228, g: 193, b: 35, lineatura: "200" },
+        { nome: "AMARELO 11 HG", r: 223, g: 194, b: 53, lineatura: "255" },
+        { nome: "AMARELO 12 HG", r: 242, g: 214, b: 0, lineatura: "200" },
+        { nome: "AMARELO 13HG", r: 229, g: 200, b: 38, lineatura: "200" },
+        { nome: "AMARELO CROMIA HG", r: 241, g: 214, b: 11, lineatura: "360" },
+        { nome: "AZUL 01 HG", r: 61, g: 68, b: 92, lineatura: "200" },
+        { nome: "AZUL 04 HG", r: 63, g: 86, b: 108, lineatura: "255" },
+        { nome: "AZUL 05 HG", r: 24, g: 87, b: 131, lineatura: "200" },
+        { nome: "AZUL 07 HG", r: 59, g: 59, b: 84, lineatura: "200" },
+        { nome: "AZUL 08 HG", r: 59, g: 63, b: 110, lineatura: "200" },
+        { nome: "AZUL 09 HG", r: 66, g: 80, b: 131, lineatura: "200" },
+        { nome: "AZUL 11 HG", r: 58, g: 64, b: 89, lineatura: "2x (200\")" },
+        { nome: "AZUL 14 HG", r: 67, g: 132, b: 169, lineatura: "255" },
+        { nome: "AZUL 16 HG", r: 184, g: 218, b: 233, lineatura: "255" },
+        { nome: "AZUL 17 HG", r: 76, g: 85, b: 111, lineatura: "255" },
+        { nome: "AZUL 19 HG", r: 42, g: 46, b: 98, lineatura: "200" },
+        { nome: "AZUL 20 HG", r: 53, g: 60, b: 112, lineatura: "200" },
+        { nome: "AZUL 21 HG", r: 75, g: 73, b: 134, lineatura: "255" },
+        { nome: "AZUL 22 HG", r: 79, g: 100, b: 151, lineatura: "200" },
+        { nome: "AZUL 23 HG", r: 52, g: 56, b: 90, lineatura: "200" },
+        { nome: "AZUL 24 HG", r: 71, g: 72, b: 110, lineatura: "200" },
+        { nome: "AZUL 29 HG", r: 92, g: 99, b: 147, lineatura: "200" },
+        { nome: "AZUL 30 HG", r: 69, g: 70, b: 104, lineatura: "200" },
+        { nome: "CIANO CROMIA HG", r: 0, g: 135, b: 183, lineatura: "360" },
+        { nome: "CINZA 02 HG", r: 153, g: 155, b: 152, lineatura: "255" },
+        { nome: "CINZA 03 HG", r: 167, g: 169, b: 166, lineatura: "255" },
+        { nome: "CINZA 04 HG", r: 143, g: 139, b: 135, lineatura: "255" },
+        { nome: "CINZA 05 HG", r: 185, g: 185, b: 180, lineatura: "255" },
+        { nome: "LARANJA 04 HG", r: 231, g: 105, b: 46, lineatura: "255" },
+        { nome: "LARANJA CROMIA HG", r: 247, g: 125, b: 35, lineatura: "255" },
+        { nome: "LILÁS 02 HG", r: 137, g: 68, b: 129, lineatura: "255" },
+        { nome: "LILÁS 04 HG", r: 134, g: 69, b: 133, lineatura: "200" },
+        { nome: "MAGENTA CROMIA HG", r: 207, g: 57, b: 103, lineatura: "360" },
+        { nome: "MARROM 03 HG", r: 96, g: 81, b: 73, lineatura: "255" },
+        { nome: "MARROM 05 HG", r: 92, g: 73, b: 64, lineatura: "200" },
+        { nome: "MARROM 07 HG", r: 96, g: 76, b: 66, lineatura: "200" },
+        { nome: "OCRE 01 HG", r: 146, g: 124, b: 84, lineatura: "255" },
+        { nome: "OCRE 02 HG", r: 159, g: 127, b: 72, lineatura: "255" },
+        { nome: "OCRE 03 HG", r: 184, g: 147, b: 78, lineatura: "255" },
+        { nome: "OCRE 04 HG", r: 202, g: 167, b: 108, lineatura: "200" },
+        { nome: "OCRE 05 HG", r: 147, g: 134, b: 100, lineatura: "255" },
+        { nome: "OCRE 07 HG", r: 177, g: 153, b: 117, lineatura: "200" },
+        { nome: "OCRE 08 HG", r: 166, g: 134, b: 78, lineatura: "255" },
+        { nome: "OCRE 09 HG", r: 211, g: 167, b: 93, lineatura: "255" },
+        { nome: "CREME 02 HG", r: 198, g: 182, b: 126, lineatura: "255" },
+        { nome: "CREME 03 HG", r: 219, g: 211, b: 186, lineatura: "255" },
+        { nome: "CREME 06 HG", r: 221, g: 211, b: 179, lineatura: "255" },
+        { nome: "PRETO CROMIA HG", r: 71, g: 68, b: 64, lineatura: "360" },
+        { nome: "VERDE 04 HG", r: 0, g: 112, b: 87, lineatura: "255" },
+        { nome: "VERDE 06 HG", r: 74, g: 140, b: 83, lineatura: "255" },
+        { nome: "VERDE 07 HG", r: 61, g: 74, b: 68, lineatura: "200" },
+        { nome: "VERDE 11 HG", r: 138, g: 195, b: 46, lineatura: "255" },
+        { nome: "VERDE 12 HG", r: 112, g: 167, b: 148, lineatura: "255" },
+        { nome: "VERDE 13 HG", r: 67, g: 132, b: 115, lineatura: "200" },
+        { nome: "VERDE 14 HG", r: 84, g: 140, b: 119, lineatura: "255" },
+        { nome: "VERDE 15 HG", r: 147, g: 177, b: 136, lineatura: "255" },
+        { nome: "VERDE 16 HG", r: 192, g: 208, b: 85, lineatura: "255" },
+        { nome: "VERDE 23 HG", r: 62, g: 65, b: 62, lineatura: "200" },
+        { nome: "VERDE 26 HG", r: 75, g: 119, b: 79, lineatura: "200" },
+        { nome: "VERDE CROMIA HG", r: 153, g: 149, b: 132, lineatura: "255" },
+        { nome: "VERMELHO 01 HG", r: 177, g: 79, b: 68, lineatura: "200" },
+        { nome: "VERMELHO 05 HG", r: 210, g: 67, b: 54, lineatura: "200" },
+        { nome: "VERMELHO 06 HG", r: 205, g: 86, b: 78, lineatura: "200" },
+        { nome: "VERMELHO 07 HG", r: 198, g: 64, b: 59, lineatura: "200" },
+        { nome: "VERMELHO 10 HG", r: 185, g: 61, b: 69, lineatura: "200" },
+        { nome: "VERMELHO 12 HG", r: 216, g: 84, b: 63, lineatura: "255" },
+        { nome: "VERMELHO 13 HG", l: 34.74, a: 25.16, b: 17.61, lineatura: "255" },
+        { nome: "VERMELHO 17 HG", r: 194, g: 81, b: 82, lineatura: "200" },
+        { nome: "VERMELHO 22 HG", r: 195, g: 81, b: 98, lineatura: "200" },
+        { nome: "ROXO 02 HG", r: 115, g: 75, b: 119, lineatura: "200" },
+        { nome: "VIOLETA CROMIA HG", r: 104, g: 79, b: 139, lineatura: "255" },
+    ];
+
+    const bancoCoresPPWTL = [
+        { nome: "AMARELO 01 HG", r: 157, g: 129, b: 78, lineatura: "200" },
+        { nome: "AMARELO 02 HG", r: 240, g: 161, b: 51, lineatura: "200" },
+        { nome: "AMARELO 06 HG", r: 199, g: 171, b: 57, lineatura: "255" },
+        { nome: "AZUL 03 HG", r: 76, g: 88, b: 137, lineatura: "200" },
+        { nome: "AZUL 10 HG", r: 71, g: 75, b: 124, lineatura: "200" },
+        { nome: "AZUL 12 HG", r: 82, g: 79, b: 105, lineatura: "200" },
+        { nome: "AZUL 15 HG", r: 70, g: 68, b: 107, lineatura: "2x (255\")" },
+        { nome: "AZUL 18 HG", r: 24, g: 87, b: 131, lineatura: "2x (255\")" },
+        { nome: "CINZA 06 HG", r: 150, g: 149, b: 146, lineatura: "255" },
+        { nome: "LARANJA 02 HG", r: 138, g: 119, b: 90, lineatura: "200" },
+        { nome: "LARANJA 03 HG", r: 171, g: 114, b: 59, lineatura: "200" },
+        { nome: "LILÁS 01 HG", r: 163, g: 103, b: 149, lineatura: "80" },
+        { nome: "LILÁS 06 HG", r: 201, g: 143, b: 148, lineatura: "200" },
+        { nome: "MARROM 01 HG", r: 83, g: 71, b: 65, lineatura: "255" },
+        { nome: "CREME 04 HG", r: 210, g: 164, b: 132, lineatura: "255" },
+        { nome: "VERDE 01 HG", r: 68, g: 133, b: 75, lineatura: "80" },
+        { nome: "VERDE 02 HG", r: 87, g: 109, b: 106, lineatura: "200" },
+        { nome: "VERDE 05 HG", r: 107, g: 149, b: 73, lineatura: "200" },
+        { nome: "VERDE 08 HG", r: 71, g: 88, b: 80, lineatura: "200" },
+        { nome: "VERDE 10 HG", r: 47, g: 135, b: 93, lineatura: "255" },
+        { nome: "VERDE 16 HG", r: 219, g: 199, b: 58, lineatura: "200" },
+        { nome: "VERDE 17 HG", r: 90, g: 122, b: 73, lineatura: "200" },
+        { nome: "VERDE 18 HG", r: 37, g: 119, b: 87, lineatura: "200" },
+        { nome: "VERDE 20 HG", r: 195, g: 196, b: 75, lineatura: "255" },
+        { nome: "VERMELHO 02 HG", r: 191, g: 95, b: 60, lineatura: "200" },
+        { nome: "VERMELHO 03 HG", r: 202, g: 117, b: 89, lineatura: "80" },
+        { nome: "VERMELHO 04 HG", r: 129, g: 93, b: 83, lineatura: "200" },
+        { nome: "VERMELHO 09 HG", r: 177, g: 111, b: 88, lineatura: "200" },
+        { nome: "VERMELHO 11 HG", r: 171, g: 92, b: 65, lineatura: "200" },
+        { nome: "VERMELHO 14 HG", r: 170, g: 93, b: 89, lineatura: "200" },
+        { nome: "VERMELHO 15 HG", r: 181, g: 98, b: 73, lineatura: "200" },
+        { nome: "VERMELHO 16 HG", r: 144, g: 60, b: 46, lineatura: "200" },
+        { nome: "VERMELHO 23 HG", r: 185, g: 92, b: 60, lineatura: "200" },
+        { nome: "VERMELHO 24 HG", r: 104, g: 73, b: 63, lineatura: "200" },
+        { nome: "VIOLETA 02 HG", r: 99, g: 78, b: 142, lineatura: "200" },
+    ];
+
+    const bancoCoresPPKraft = [
+        { nome: "AMARELO 09 HG", r: 236, g: 206, b: 68, lineatura: "200" },
+        { nome: "AMARELO 10 HG", r: 232, g: 181, b: 60, lineatura: "255" },
+        { nome: "AMARELO 14 HG", r: 226, g: 191, b: 46, lineatura: "200" },
+        { nome: "AZUL 02 HG", r: 67, g: 68, b: 93, lineatura: "200" },
+        { nome: "AZUL 06 HG", r: 72, g: 79, b: 124, lineatura: "2x (200\")" },
+        { nome: "AZUL 08 HG", r: 59, g: 63, b: 110, lineatura: "200" },
+        { nome: "AZUL 13 HG", r: 154, g: 205, b: 212, lineatura: "2x (200\")" },
+        { nome: "AZUL 19 HG", r: 151, g: 173, b: 178, lineatura: "200" },
+        { nome: "BRANCO 01 HG", r: 190, g: 187, b: 184, lineatura: "255" },
+        { nome: "LARANJA 01 HG", r: 228, g: 121, b: 79, lineatura: "255" },
+        { nome: "LARANJA 06 HG", r: 220, g: 112, b: 68, lineatura: "200" },
+        { nome: "LARANJA 08 HG", r: 210, g: 112, b: 72, lineatura: "200" },
+        { nome: "LILÁS 03 HG", r: 119, g: 78, b: 121, lineatura: "200" },
+        { nome: "MARROM 02 HG", r: 81, g: 69, b: 64, lineatura: "200" },
+        { nome: "PRETO 01 HG", r: 74, g: 69, b: 64, lineatura: "200" },
+        { nome: "VERDE 09 HG", r: 0, g: 155, b: 112, lineatura: "200" },
+        { nome: "VERDE 16 HG", r: 192, g: 208, b: 85, lineatura: "200" },
+        { nome: "VERDE 19 HG", r: 0, g: 147, b: 147, lineatura: "255" },
+        { nome: "VERMELHO 20 HG", r: 199, g: 96, b: 84, lineatura: "200" },
+        { nome: "VIOLETA 01 HG", r: 225, g: 216, b: 228, lineatura: "255" },
+    ];
+
+    const opcoesBancos = {
+        'branco':    { lista: bancoCoresBranco,   nomeDisplay: "Papel Branco" },
+        'pardo':     { lista: bancoCoresPardo,    nomeDisplay: "Papel Pardo" },
+        'pp_coated': { lista: bancoCoresPPCoated, nomeDisplay: "Pre-Print: Coated" },
+        'pp_wtl':    { lista: bancoCoresPPWTL,    nomeDisplay: "Pre-Print: WTL" },
+        'pp_kraft':  { lista: bancoCoresPPKraft,  nomeDisplay: "Pre-Print: Kraft" }
+    };
+
+    // ==========================================
+    // 3. LÓGICA DO APP
+    // ==========================================
+
+    const input = document.getElementById('inputArquivo');
+    const imgElement = document.getElementById('minhaImagem');
+    const containerImg = document.getElementById('containerImagem');
+    const canvas = document.getElementById('canvasOculto');
+    const ctx = canvas.getContext('2d');
+    const resultadoDiv = document.getElementById('resultado');
+    const selectLineatura = document.getElementById('selectLineatura');
+    const areaLineatura = document.getElementById('areaLineatura');
+
+    function atualizarOpcoes() {
+        const radioSelecionado = document.querySelector('input[name="tipoPapel"]:checked');
+        if (!radioSelecionado) return;
+
+        const config = opcoesBancos[radioSelecionado.value];
+        const lista = config.lista;
+
+        const lineaturasUnicas = [...new Set(lista.map(item => item.lineatura))];
+        const lineaturasLimpas = lineaturasUnicas.filter(l => l !== undefined);
+
+        selectLineatura.innerHTML = '<option value="todas">Ver Todas as Lineaturas</option>';
+        
+        if (lineaturasLimpas.length > 0) {
+            areaLineatura.style.display = 'block';
+            // Ordenar numericamente se possível
+            lineaturasLimpas.sort((a, b) => parseFloat(a) - parseFloat(b));
+
+            lineaturasLimpas.forEach(lin => {
+                const option = document.createElement('option');
+                option.value = lin;
+                option.innerText = "Lineatura " + lin;
+                selectLineatura.appendChild(option);
+            });
+        } else {
+            areaLineatura.style.display = 'none';
+        }
+    }
+    atualizarOpcoes();
+
+    // --- NOVA FUNÇÃO: ADICIONAR COR PERSONALIZADA ---
+    function adicionarCorPersonalizada() {
+        // 1. Validar Inputs
+        const nome = document.getElementById('addNome').value.trim();
+        const l = parseFloat(document.getElementById('addL').value);
+        const a = parseFloat(document.getElementById('addA').value);
+        const b = parseFloat(document.getElementById('addB').value);
+
+        if (!nome || isNaN(l) || isNaN(a) || isNaN(b)) {
+            alert("Preencha o Nome, L, A e B corretamente.");
+            return;
+        }
+
+        // 2. Identificar banco ativo
+        const radioSelecionado = document.querySelector('input[name="tipoPapel"]:checked');
+        if (!radioSelecionado) return;
+        
+        const bancoAtivo = opcoesBancos[radioSelecionado.value].lista;
+
+        // 3. Criar objeto e adicionar (push)
+        const novaCor = {
+            nome: nome + " (Custom)",
+            l: l,
+            a: a,
+            b: b,
+            // Não colocamos lineatura para ser sempre visível, ou definimos 'Manual'
+            lineatura: 'Manual'
+        };
+
+        bancoAtivo.push(novaCor);
+
+        // 4. Feedback
+        alert(`Sucesso!\nCor "${nome}" adicionada ao banco ${opcoesBancos[radioSelecionado.value].nomeDisplay}.`);
+        
+        // Limpar campos
+        document.getElementById('addNome').value = "";
+        document.getElementById('addL').value = "";
+        document.getElementById('addA').value = "";
+        document.getElementById('addB').value = "";
+
+        // Atualizar filtros se necessário
+        atualizarOpcoes();
+    }
+
+    // --- CARREGAMENTO DE IMAGEM / CÂMARA ---
+    input.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        document.getElementById('textoAjuda').innerText = "Carregando...";
+        
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            imgElement.src = event.target.result;
+        }
+        reader.readAsDataURL(file);
+    });
+
+    imgElement.onload = function() {
+        imgElement.style.display = 'block';
+        document.getElementById('textoAjuda').style.display = 'none';
+        containerImg.style.border = "3px solid var(--success)";
+        canvas.width = imgElement.naturalWidth;
+        canvas.height = imgElement.naturalHeight;
+        ctx.drawImage(imgElement, 0, 0);
+    }
+
+    imgElement.addEventListener('click', function(e) {
+        const rect = imgElement.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = Math.floor((e.clientX - rect.left) * scaleX);
+        const y = Math.floor((e.clientY - rect.top) * scaleY);
+
+        try {
+            const pixel = ctx.getImageData(x, y, 1, 1).data;
+            processarCor(pixel[0], pixel[1], pixel[2]);
+        } catch (erro) {
+            alert("Toque mais ao centro da imagem.");
+        }
+    });
+
+    // --- CÁLCULOS E COMPARAÇÃO ---
+    function processarCor(r, g, b) {
+        const labClicado = rgbParaLab(r, g, b);
+        executarComparacao(labClicado);
+    }
+
+    function buscarLabManual() {
+        const l = parseFloat(document.getElementById('inputL').value);
+        const a = parseFloat(document.getElementById('inputA').value);
+        const b = parseFloat(document.getElementById('inputB').value);
+
+        if (isNaN(l) || isNaN(a) || isNaN(b)) {
+            alert("Preencha L, A e B.");
+            return;
+        }
+        const labAlvo = { l: l, a: a, b: b };
+        executarComparacao(labAlvo);
+    }
+
+    function executarComparacao(labAlvo) {
+        const radioSelecionado = document.querySelector('input[name="tipoPapel"]:checked');
+        const configuracao = opcoesBancos[radioSelecionado.value];
+        let listaAtual = configuracao.lista;
+        
+        // Filtro Lineatura
+        const filtro = selectLineatura.value;
+        if (areaLineatura.style.display !== 'none' && filtro !== 'todas') {
+            listaAtual = listaAtual.filter(cor => cor.lineatura == filtro);
+        }
+
+        let menorDistancia = Infinity;
+        let corVencedora = null;
+
+        listaAtual.forEach(corBanco => {
+            let labBanco;
+            if (corBanco.l !== undefined) {
+                labBanco = { l: corBanco.l, a: corBanco.a, b: corBanco.b };
+            } else {
+                labBanco = rgbParaLab(corBanco.r, corBanco.g, corBanco.b);
+            }
+
+            // Delta E (Distância Euclidiana simples)
+            const dist = Math.sqrt(
+                Math.pow(labAlvo.l - labBanco.l, 2) + 
+                Math.pow(labAlvo.a - labBanco.a, 2) + 
+                Math.pow(labAlvo.b - labBanco.b, 2)
+            );
+
+            if (dist < menorDistancia) {
+                menorDistancia = dist;
+                corVencedora = corBanco;
+            }
+        });
+
+        if (corVencedora) {
+            exibirResultado(corVencedora, labAlvo, configuracao.nomeDisplay);
+        } else {
+            alert("Nenhuma cor encontrada.");
+        }
+    }
+
+    function exibirResultado(cor, lab, nomeBase) {
+        resultadoDiv.style.display = 'block';
+        document.getElementById('nomeBaseUsada').innerText = nomeBase;
+        
+        const infoLin = cor.lineatura ? cor.lineatura : "N/A";
+        document.getElementById('infoLineatura').innerText = infoLin;
+        document.getElementById('nomeCor').innerText = cor.nome;
+
+        let cssColor = "";
+        if (cor.l !== undefined) {
+            const rgbVisual = labParaRgb(cor.l, cor.a, cor.b);
+            cssColor = `rgb(${rgbVisual.r},${rgbVisual.g},${rgbVisual.b})`;
+        } else {
+            cssColor = `rgb(${cor.r},${cor.g},${cor.b})`;
+        }
+        
+        document.getElementById('visualCor').style.backgroundColor = cssColor;
+        document.getElementById('labDados').innerText = 
+            `L: ${lab.l.toFixed(1)} | A: ${lab.a.toFixed(1)} | B: ${lab.b.toFixed(1)}`;
+            
+        resultadoDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // --- MATEMÁTICA DE CORES ---
+    function rgbParaLab(r, g, b) {
+        let r_lin = r / 255, g_lin = g / 255, b_lin = b / 255;
+        r_lin = (r_lin > 0.04045) ? Math.pow((r_lin + 0.055) / 1.055, 2.4) : r_lin / 12.92;
+        g_lin = (g_lin > 0.04045) ? Math.pow((g_lin + 0.055) / 1.055, 2.4) : g_lin / 12.92;
+        b_lin = (b_lin > 0.04045) ? Math.pow((b_lin + 0.055) / 1.055, 2.4) : b_lin / 12.92;
+        
+        let x = (r_lin * 0.4124 + g_lin * 0.3576 + b_lin * 0.1805) * 100;
+        let y = (r_lin * 0.2126 + g_lin * 0.7152 + b_lin * 0.0722) * 100;
+        let z = (r_lin * 0.0193 + g_lin * 0.1192 + b_lin * 0.9505) * 100;
+        
+        x /= 95.047; y /= 100.000; z /= 108.883;
+        
+        x = (x > 0.008856) ? Math.pow(x, 1/3) : (7.787 * x) + (16 / 116);
+        y = (y > 0.008856) ? Math.pow(y, 1/3) : (7.787 * y) + (16 / 116);
+        z = (z > 0.008856) ? Math.pow(z, 1/3) : (7.787 * z) + (16 / 116);
+        
+        return { l: (116 * y) - 16, a: 500 * (x - y), b: 200 * (y - z) };
+    }
+
+    function labParaRgb(l, a, b) {
+        let y = (l + 16) / 116;
+        let x = a / 500 + y;
+        let z = y - b / 200;
+        
+        let x3 = x * x * x;
+        let y3 = y * y * y;
+        let z3 = z * z * z;
+        
+        x = (x3 > 0.008856) ? x3 : (x - 16 / 116) / 7.787;
+        y = (y3 > 0.008856) ? y3 : (y - 16 / 116) / 7.787;
+        z = (z3 > 0.008856) ? z3 : (z - 16 / 116) / 7.787;
+        
+        x *= 95.047; y *= 100.000; z *= 108.883;
+        
+        let x_lin = x / 100, y_lin = y / 100, z_lin = z / 100;
+        let r_lin = x_lin * 3.2406 + y_lin * -1.5372 + z_lin * -0.4986;
+        let g_lin = x_lin * -0.9689 + y_lin * 1.8758 + z_lin * 0.0415;
+        let b_lin = x_lin * 0.0557 + y_lin * -0.2040 + z_lin * 1.0570;
+        
+        const to255 = (val) => Math.max(0, Math.min(255, Math.round((val > 0.0031308 ? (1.055 * Math.pow(val, 1 / 2.4) - 0.055) : 12.92 * val) * 255)));
+
+        return { r: to255(r_lin), g: to255(g_lin), b: to255(b_lin) };
+    }
+</script>
+
+</body>
+</html>
